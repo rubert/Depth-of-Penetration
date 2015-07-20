@@ -1,0 +1,14 @@
+Analyze/*
+Examples/*
+3D/*
+Filters/*
+Tools/*
+Input-Output/*
+Stacks/*
+Graphics/*
+*.ijm
+*.jar
+*.js
+*.bsh
+*.txt
+*.py
