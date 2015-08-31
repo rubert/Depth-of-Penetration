@@ -45,14 +45,15 @@ public class computeDOP_ implements PlugIn {
 		//a depth 20 mm 				
 		int iDepthPixels = (int)(20/delta);
 		float intersectionDepth = 0;		
-		Boolean keepLooping = true;
-		/*
-		while(keepLooping)
-			if(phanProfile[intersectionDepth] < noiseProfile[intersectionDepth]){
-				keepLooping = False;
-				intersectionDepth = iDepthPixels*delta;
+		boolean keepLooping = true;
+		
+		while(keepLooping){
+			if(phanProfile[iDepthPixels] < noiseProfile[iDepthPixels]){
+				keepLooping = false;
+				intersectionDepth = (float)(iDepthPixels*delta);
 					}
-			iDepth++;
+			iDepthPixels++;
+			}
 
 		//Create profile plots 
 		Plot dopPlot = new Plot("Mean Pixel Values", "Depth (mm)", "Mean Pixel Value", depthAxis, phanProfile);
@@ -66,7 +67,9 @@ public class computeDOP_ implements PlugIn {
 		dopPlot.show();
 
 		//Display intersection depth
-		WaitForUserDialog iDepthDialog = new WaitForUserDialog("Press OK when done.", "DOP Found.\n\n" + Float.toString(intersectionDepth));
-		*/
+		String DOPString = Float.toString(intersectionDepth);
+		WaitForUserDialog DOPDisplay = new WaitForUserDialog("Record DOP", DOPString);   
+		DOPDisplay.show();
+		
 	}
 }
