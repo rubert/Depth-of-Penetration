@@ -3,21 +3,24 @@ import ij.process.*;
 import ij.gui.*;
 import java.awt.*;
 import ij.plugin.*;
+import ij.measure.Calibration;
 
-//Adding a comment to attempt a commit
 
 public class computeDOP_ implements PlugIn {
 	
 	public void run(String arg) {
-		IJ.showMessage("DOP Plugin Status","Load the Phantom Image");		
+		IJ.showMessage("DOP Plugin Status","Load the Phantom Image.");		
 		ImagePlus impPhantom = IJ.openImage();
 		impPhantom.show();
 	
 		
 		//Phantom image
-		WaitForUserDialog wait = new WaitForUserDialog("Phantom Loaded, Select a Rectangular ROI", "Please press OK when done.");
+		WaitForUserDialog wait = new WaitForUserDialog("Press OK when done.", "Phantom Loaded.\n Set the pixel spacing if necessary.\n\n Select a Rectangular ROI.");
 		wait.show();
 		
+		//Find the intersection point
+		Calibration cal = impPhantom.getCalibration(); 
+		double delta = cal.pixelWidth;
 		Roi userROI = impPhantom.getRoi();
 		ProfilePlot pPlotPhantom = new ProfilePlot(impPhantom, true);
 		double[] phanProfile = pPlotPhantom.getProfile();
@@ -33,12 +36,25 @@ public class computeDOP_ implements PlugIn {
 		double[] depthAxis = new double[noiseProfile.length];
 		
 		for(int i=0; i<noiseProfile.length; i++){
-			depthAxis[i] = i;
+			depthAxis[i] = delta*i;
 			noiseProfile[i] *= 1.4;		
 		}
+		
+		
+		//Find the first intersection point following
+		//a depth 20 mm 				
+		int iDepthPixels = (int)(20/delta);
+		float intersectionDepth = 0;		
+		Boolean keepLooping = true;
+		/*
+		while(keepLooping)
+			if(phanProfile[intersectionDepth] < noiseProfile[intersectionDepth]){
+				keepLooping = False;
+				intersectionDepth = iDepthPixels*delta;
+					}
+			iDepth++;
 
-		//Create profile plots and find their intersection point
-				
+		//Create profile plots 
 		Plot dopPlot = new Plot("Mean Pixel Values", "Depth (mm)", "Mean Pixel Value", depthAxis, phanProfile);
 		dopPlot.setColor(Color.RED);
 		dopPlot.draw();
@@ -49,7 +65,8 @@ public class computeDOP_ implements PlugIn {
 		
 		dopPlot.show();
 
-
+		//Display intersection depth
+		WaitForUserDialog iDepthDialog = new WaitForUserDialog("Press OK when done.", "DOP Found.\n\n" + Float.toString(intersectionDepth));
+		*/
 	}
-
 }
