@@ -53,6 +53,10 @@ public class computeDOP_ implements PlugIn {
 				intersectionDepth = (float)(iDepthPixels*delta);
 					}
 			iDepthPixels++;
+			if(iDepthPixels == phanProfile.length){
+				keepLooping = false;
+				intersectionDepth = (float)(iDepthPixels*delta);
+					}
 			}
 
 		//Create profile plots 
