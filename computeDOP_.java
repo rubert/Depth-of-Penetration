@@ -13,7 +13,7 @@ public class computeDOP_ implements PlugIn {
 		ImagePlus impPhantom = IJ.openImage();
 		impPhantom.show();
 	
-		
+		float MINIMUM_DOP = 20;
 		//Phantom image
 		WaitForUserDialog wait = new WaitForUserDialog("Press OK when done.", "Phantom Loaded.\n Set the pixel spacing if necessary.\n\n Select a Rectangular ROI.");
 		wait.show();
@@ -40,12 +40,33 @@ public class computeDOP_ implements PlugIn {
 			noiseProfile[i] *= 1.4;		
 		}
 		
-		
-		//Find the first intersection point following
-		//a depth 20 mm 				
-		int iDepthPixels = (int)(20/delta);
-		float intersectionDepth = 0;		
+		//Find the depth where the phantom image has its peak pixel value
+		int maxDepthPixels = 0;
+		float peakPhanDepth = 0;		
 		boolean keepLooping = true;
+		double maxPhanValue = 0;
+		
+		for(int i = 0;i<phanProfile.length;i++){
+			if(phanProfile[i] > maxPhanValue){
+				peakPhanDepth = (float)(i*delta);
+				maxPhanValue = phanProfile[i];
+					}
+			}
+
+		//Find the first intersection point following
+		//a depth of  20 mm and the maximum brightness of the phantom image				
+		int iDepthPixels = 0;
+		if(peakPhanDepth > MINIMUM_DOP)
+		{
+			iDepthPixels = (int)(peakPhanDepth/delta);
+			}
+		else
+		{
+			iDepthPixels = (int)(MINIMUM_DOP/delta);
+		}
+		
+		float intersectionDepth = (float) ( iDepthPixels*delta );		
+		keepLooping = true;
 		
 		while(keepLooping){
 			if(phanProfile[iDepthPixels] < noiseProfile[iDepthPixels]){
@@ -64,8 +85,8 @@ public class computeDOP_ implements PlugIn {
 		dopPlot.setColor(Color.RED);
 		dopPlot.draw();
 		
-		dopPlot.addPoints( depthAxis, noiseProfile, Plot.LINE);
 		dopPlot.setColor(Color.BLUE);
+		dopPlot.addPoints( depthAxis, noiseProfile, Plot.LINE);
 		dopPlot.draw();
 		
 		dopPlot.show();
